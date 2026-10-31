@@ -428,17 +428,19 @@ function openSite(){
 
 /* ---------- site : carousel ---------- */
 const CARS=[
- {n:'Mercedes SLS AMG',c:'Fès · Maroc',cat:'Sport Coupé',id:'FEA-0612',tag:'New',img:'assets/sls.jpg'},
- {n:'Porsche 911',c:'Fès · Maroc',cat:'Sport Coupé',id:'FEA-4003',tag:'Best Rated',img:'assets/porsche.jpg'},
- {n:'Range Rover',c:'Fès · Maroc',cat:'Luxury SUV',id:'FEA-4550',tag:'New',img:'assets/rangerover.jpg'},
- {n:'Bentley Bentayga',c:'Fès · Maroc',cat:'Luxury SUV',id:'FEA-7781',tag:'Best Rated',img:'assets/bentley.jpg'}
+ {n:'Hyundai Tucson',c:'Fès · Maroc',cat:'Luxury SUV',tag:'SUV Premium',img:'assets/web/hyundai-tucson.jpg'},
+ {n:'Ford Kuga',c:'Fès · Maroc',cat:'Luxury SUV',tag:'SUV Premium',img:'assets/web/ford-kuga.jpg'},
+ {n:'Range Rover Sport',c:'Fès · Maroc',cat:'Luxury SUV',tag:'Premium',img:'assets/web/range-rover-sport.jpg'},
+ {n:'Peugeot 3008',c:'Fès · Maroc',cat:'Luxury SUV',tag:'SUV Premium',img:'assets/web/peugeot-3008.jpg'},
+ {n:'Opel Grandland',c:'Fès · Maroc',cat:'Luxury SUV',tag:'SUV Premium',img:'assets/web/opel-grandland.jpg'},
+ {n:'Volkswagen Touareg',c:'Fès · Maroc',cat:'Luxury SUV',tag:'Premium',img:'assets/web/volkswagen-touareg.jpg'}
 ];
 const track=$('#track'),dots=$('#dots');
 CARS.forEach((c,i)=>{
   track.insertAdjacentHTML('beforeend',`<div class="card" data-i="${i}"><div class="card-in">
     <div class="ph"><span class="badge">${c.tag}</span><svg class="sil"><use href="#sil"/></svg><img src="${c.img}" alt="${c.n}" loading="lazy" onerror="this.remove()"></div>
     <div class="info"><h4>${c.n}</h4><div class="city">${c.c}</div>
-    <div class="meta"><span>⚙ Automatic<br>${c.id}</span><span style="text-align:right">${c.cat}</span></div>
+    <div class="meta"><span>Catégorie</span><span style="text-align:right">${c.cat}</span></div>
     <div class="btns"><button class="btn-o">Call Now</button><button class="btn-g" data-book="${i}">Book Now</button></div></div><div class="glare"></div></div></div>`);
   dots.insertAdjacentHTML('beforeend','<i></i>');
   $('#models').insertAdjacentHTML('beforeend',`<option value="${c.n}">`);
