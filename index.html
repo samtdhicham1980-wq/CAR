@@ -67,6 +67,7 @@ button{font:inherit;color:inherit;cursor:pointer;border:0;background:none}
 #mapUI{position:fixed;inset:0;z-index:12;pointer-events:none;opacity:0}
 #fes{position:absolute;pointer-events:auto;transform:translate(-50%,-50%);width:90px;height:90px;border-radius:50%;opacity:0}
 #fes span{position:absolute;left:50%;top:calc(100% - 6px);transform:translateX(-50%);padding:3px 12px;border-radius:99px;background:rgba(10,20,20,.7);border:1px solid var(--line);backdrop-filter:blur(6px);font-size:13px;font-weight:500}
+#wsLabel{position:absolute;pointer-events:none;transform:translate(-50%,-50%);padding:5px 9px;border-radius:99px;background:rgba(10,20,20,.76);border:1px solid rgba(212,175,55,.5);backdrop-filter:blur(6px);color:var(--gold-2);font-size:10px;letter-spacing:.08em;white-space:nowrap;text-shadow:0 1px 4px #000}
 #mapHint{position:absolute;bottom:calc(8% + env(safe-area-inset-bottom,0px));left:0;right:0;text-align:center;font-size:12px;letter-spacing:.3em;text-transform:uppercase;color:var(--gold-2)}
 #hand{position:fixed;z-index:40;width:44px;pointer-events:none;opacity:0;filter:drop-shadow(0 4px 8px #000)}
 
@@ -153,7 +154,7 @@ footer small{display:block;margin-top:10px;font-size:11px;opacity:.7}
   <button id="cta">Ignite Your Journey</button>
 </div>
 
-<div id="mapUI"><div id="fes"><span>Fès</span></div><div id="mapHint">Touchez Fès</div></div>
+<div id="mapUI"><div id="fes"><span>Fès</span></div><div id="wsLabel">Sahara occidental</div><div id="mapHint">Touchez Fès</div></div>
 <svg id="hand" viewBox="0 0 64 64"><path fill="#fff" stroke="#111" stroke-width="2" d="M24 6c3 0 4 2 4 4v16l3-1c2-.6 4 .4 4.6 2l2.4-.6c2-.5 3.8.6 4.4 2.4l2-.3c2-.3 4 1.2 4.2 3.4l.8 11c.3 5-2.4 11-7 14H29c-4-3-9-9-12-15-1-2 0-4 2-4.6 1.6-.5 3.2.2 4.4 1.6l2.6 3V10c0-2 1-4 2-4z"/></svg>
 <div id="speed"></div><div id="flash"></div>
 <div id="cur"></div><div id="toast"></div>
@@ -226,6 +227,7 @@ function resize(){
   const w=innerWidth,h=innerHeight;
   renderer&&renderer.setSize(w,h,false);
   camera.aspect=w/h;camera.updateProjectionMatrix();
+  if(active===mapScene){camera.position.copy(mapFramePosition());look.set(0,0,0)}
   layoutHeroCam();
 }
 function layoutHeroCam(){ if(active!==heroScene||busy)return; const p=isMobile()?[0,1.5,8.6]:[0,1.4,7.2]; camera.position.set(...p); }
@@ -287,16 +289,23 @@ new GLTFLoader().load('car.glb',gltf=>{setupCar(gltf);finishLoad()},
 
 /* ---------- MAP SCENE ---------- */
 const mapGroup=new THREE.Group();mapScene.add(mapGroup);
-const OUT=[[-13.2,27.7],[-12,28.1],[-10,29.5],[-9.7,30.4],[-9.8,31.4],[-8.8,32.4],[-7.5,33.6],[-6.8,34],[-6,35],[-5.9,35.8],[-5.3,35.9],[-4.4,35.2],[-2.9,35.4],[-1.9,35.1],[-1.7,34.6],[-1.7,33],[-1.2,32.1],[-2.2,32.1],[-3,31.7],[-3.6,31],[-5.5,29.9],[-6.7,29.6],[-8.7,28.7],[-8.7,27.7]];
-const S=.62, P=(lo,la)=>new THREE.Vector2((lo+7.2)*S,(la-31.8)*S);
-const shape=new THREE.Shape(OUT.map(p=>P(...p)));
+const OUT=[[-8.6788,28.6928],[-8.6877,26.0000],[-12.0153,25.9949],[-12.0193,23.4610],[-12.3539,23.3225],[-12.6194,23.2708],[-13.0152,23.0180],[-13.1523,22.8200],[-13.1550,22.6888],[-13.0933,22.4955],[-13.0152,21.3334],[-16.9588,21.3329],[-17.0774,20.9045],[-17.0569,20.7669],[-17.1046,20.8625],[-16.9210,21.9313],[-16.7068,22.2755],[-16.5218,22.3149],[-16.4666,22.3774],[-16.4294,22.5104],[-16.3573,22.5831],[-16.2896,22.8998],[-16.1632,22.9932],[-16.1595,23.0825],[-16.2131,23.0944],[-15.7726,23.7878],[-15.7751,23.9119],[-15.7953,23.8566],[-15.8882,23.8107],[-15.9482,23.6843],[-16.0098,23.6554],[-15.8712,23.8692],[-15.6201,24.0263],[-15.2040,24.4675],[-15.0148,24.5624],[-14.8956,24.7057],[-14.8360,24.9187],[-14.8497,25.2142],[-14.8192,25.3302],[-14.6210,25.7836],[-14.5139,25.9370],[-14.4661,26.1942],[-14.1802,26.4244],[-13.9237,26.5009],[-13.5611,26.7491],[-13.1713,27.6850],[-13.0452,27.7598],[-12.9524,27.9286],[-12.0614,28.0890],[-11.4856,28.3256],[-11.0631,28.7524],[-10.5738,28.9904],[-10.2484,29.2994],[-10.0530,29.5999],[-9.8202,29.8389],[-9.6551,30.1269],[-9.6116,30.4044],[-9.7001,30.5427],[-9.8885,30.6483],[-9.8129,30.8271],[-9.8475,31.1213],[-9.8066,31.3435],[-9.8475,31.4024],[-9.6942,31.6257],[-9.6673,31.7311],[-9.3661,32.0263],[-9.2777,32.1966],[-9.2599,32.5769],[-8.8678,32.8819],[-8.5292,33.2687],[-8.4517,33.2642],[-8.2847,33.3898],[-7.5291,33.6326],[-7.4064,33.7270],[-7.0318,33.8743],[-6.8221,34.0396],[-6.2921,34.8808],[-5.9272,35.7807],[-5.5990,35.8223],[-5.3989,35.9245],[-5.2494,35.5846],[-5.0663,35.4175],[-4.7705,35.2410],[-4.3760,35.1518],[-3.9193,35.2668],[-3.9039,35.2142],[-3.7875,35.2092],[-3.6996,35.2908],[-3.5910,35.2333],[-3.3192,35.2018],[-3.0771,35.2879],[-2.9686,35.4464],[-2.9638,35.2862],[-2.8990,35.2600],[-2.9098,35.1867],[-2.8561,35.1313],[-2.7481,35.1160],[-2.8784,35.2463],[-2.6667,35.1082],[-2.5175,35.0994],[-2.4167,35.1492],[-2.2753,35.1096],[-2.2226,35.0893],[-2.1938,35.0036],[-2.0163,34.9262],[-1.9797,34.8653],[-1.7695,34.7413],[-1.8711,34.5966],[-1.7030,34.4797],[-1.8096,34.3725],[-1.6696,34.0792],[-1.7187,33.8981],[-1.7032,33.7618],[-1.7468,33.7024],[-1.6624,33.6447],[-1.6173,33.5544],[-1.6832,33.3692],[-1.6742,33.2380],[-1.4995,33.0602],[-1.5030,32.9746],[-1.5588,32.9337],[-1.4233,32.7424],[-1.0320,32.4944],[-1.2441,32.3569],[-1.3096,32.1674],[-1.1956,32.1460],[-1.2103,32.0897],[-2.5161,32.1322],[-2.8812,32.0763],[-2.9387,32.0486],[-2.8278,31.7946],[-3.6595,31.6478],[-3.6735,31.3892],[-3.8152,31.3372],[-3.8428,31.1702],[-3.8108,31.1429],[-3.7314,31.1763],[-3.6241,31.0865],[-3.5547,30.9559],[-3.6595,30.8371],[-3.6455,30.7113],[-3.8342,30.6275],[-4.1557,30.5855],[-4.3724,30.5086],[-4.6240,30.2850],[-4.8756,30.1802],[-5.1761,29.9775],[-5.5395,29.5232],[-5.6373,29.4953],[-5.7212,29.5232],[-5.7562,29.6141],[-6.2733,29.5791],[-6.6996,29.5162],[-6.7835,29.4463],[-6.9582,29.5092],[-7.1469,29.5092],[-7.3496,29.3834],[-7.6536,29.3762]];
+const WESTERN_SAHARA=[[-8.8170,27.6615],[-8.6824,27.6614],[-8.6877,26.0000],[-12.0153,25.9949],[-12.0193,23.4610],[-12.3539,23.3225],[-12.6194,23.2708],[-13.0152,23.0180],[-13.1523,22.8200],[-13.1550,22.6888],[-13.0933,22.4955],[-13.0152,21.3334],[-16.9588,21.3329],[-17.0774,20.9045],[-17.0569,20.7669],[-17.1046,20.8625],[-17.0137,21.4200],[-16.7300,21.4698],[-16.0400,21.5001],[-14.9702,21.4405],[-14.7500,21.5001],[-14.6098,21.7501],[-14.6299,21.8604],[-14.2202,22.3096],[-14.1001,23.0997],[-14.0200,23.4103],[-13.8901,23.6905],[-13.7700,23.7901],[-13.3100,23.9806],[-12.9902,24.4698],[-12.4301,24.8302],[-12.3100,25.1104],[-12.0600,25.9903],[-12.0298,26.0303],[-11.7172,26.1036],[-11.5107,26.4698],[-11.3369,26.6329],[-11.3159,26.7442],[-11.3916,26.8829],[-10.9218,27.0098],[-10.7568,27.0196],[-10.5503,26.9903],[-10.2505,26.8604],[-10.0317,26.9102],[-9.8169,26.8497],[-9.7344,26.8604],[-9.4121,27.0880],[-8.7939,27.1202],[-8.7529,27.1905],[-8.7958,27.3077],[-8.7734,27.4600]];
+const MAP_LON0=-9.068321, MAP_LAT0=28.346716, S=.36;
+const P=(lo,la)=>new THREE.Vector2((lo-MAP_LON0)*S,(la-MAP_LAT0)*S);
+const mapShape=new THREE.Shape(OUT.map(p=>P(...p)));
+const westernSaharaShape=new THREE.Shape(WESTERN_SAHARA.map(p=>P(...p)));
 const DEPTH=.35;
-const geo=new THREE.ExtrudeGeometry(shape,{depth:DEPTH,bevelEnabled:true,bevelSize:.03,bevelThickness:.03,bevelSegments:2});
+const geo=new THREE.ExtrudeGeometry(mapShape,{depth:DEPTH,bevelEnabled:true,bevelSize:.03,bevelThickness:.03,bevelSegments:2});
 const noiseTex=(()=>{const c=document.createElement('canvas');c.width=c.height=512;const x=c.getContext('2d');x.fillStyle='#777';x.fillRect(0,0,512,512);
   for(let i=0;i<900;i++){const r=8+Math.random()*50,px=Math.random()*512,py=Math.random()*512,v=Math.random()>.5?255:0;const g=x.createRadialGradient(px,py,0,px,py,r);g.addColorStop(0,`rgba(${v},${v},${v},.35)`);g.addColorStop(1,'rgba(0,0,0,0)');x.fillStyle=g;x.fillRect(px-r,py-r,2*r,2*r)}
   const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(.35,.35);return t})();
 const mapMesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0xd6a24a,metalness:.7,roughness:.5,bumpMap:noiseTex,bumpScale:14}));
 mapGroup.add(mapMesh);
+// Teinte légère distincte pour le Sahara occidental, représenté séparément sans affirmer une souveraineté.
+const wsGeo=new THREE.ShapeGeometry(westernSaharaShape);
+const wsMesh=new THREE.Mesh(wsGeo,new THREE.MeshStandardMaterial({color:0x8d6433,metalness:.65,roughness:.48,transparent:true,opacity:.48,depthWrite:false,side:THREE.DoubleSide}));
+wsMesh.position.z=DEPTH+.045;wsMesh.renderOrder=1;mapGroup.add(wsMesh);
 const edge=new THREE.LineSegments(new THREE.EdgesGeometry(geo,35),new THREE.LineBasicMaterial({color:0xfff0b0}));edge.position.z=.001;mapGroup.add(edge);
 // régions (traits intérieurs)
 [[[-9.5,33.8],[-6.2,33.7],[-4,34.3],[-1.9,34.2]],[[-9.8,31.6],[-6.5,32],[-4,32.3],[-1.5,32.5]],[[-8.7,29.7],[-6,30.2],[-3.6,31]],[[-7.5,33.6],[-6.3,32.5],[-5,31.2]],[[-5.9,35.5],[-5.4,34.7],[-4.5,34.2]]].forEach(l=>{
@@ -307,7 +316,14 @@ mapGroup.rotation.x=-Math.PI/2;
 mapScene.add(new THREE.AmbientLight(0xffffff,.8));
 const sun=new THREE.DirectionalLight(0xfff1cf,3);sun.position.set(-5,9,6);mapScene.add(sun);
 const warm=new THREE.PointLight(0xd4af37,30,20);warm.position.set(0,3,2);mapScene.add(warm);
+function mapFramePosition(){
+  const halfFov=THREE.MathUtils.degToRad(camera.fov/2), aspect=Math.max(innerWidth/innerHeight,.2);
+  const distance=Math.max(5.85/(2*Math.tan(halfFov)*aspect),4.6/(2*Math.tan(halfFov)))*1.14;
+  return new THREE.Vector3(0,distance*.76,distance*.65);
+}
 
+const wsV=P(-13.25,24.3);
+const wsLocal=new THREE.Vector3(wsV.x,wsV.y,DEPTH+.06), wsWorld=new THREE.Vector3();
 const fesV=P(-5.0,34.03);
 const fesWorld=new THREE.Vector3(fesV.x,DEPTH+.05,-fesV.y);
 const pin=new THREE.Group();
@@ -345,6 +361,9 @@ function tick(now){
     tProj.copy(fesWorld).project(camera);
     const fx=(tProj.x*.5+.5)*innerWidth, fy=(-tProj.y*.5+.5)*innerHeight-(pin.position.y<2?30:0);
     const f=$('#fes');f.style.left=fx+'px';f.style.top=fy+'px';
+    wsWorld.copy(wsLocal);mapGroup.localToWorld(wsWorld);tProj.copy(wsWorld).project(camera);
+    const wx=(tProj.x*.5+.5)*innerWidth, wy=(-tProj.y*.5+.5)*innerHeight;
+    const ws=$('#wsLabel');ws.style.left=wx+'px';ws.style.top=wy+'px';
   }
   renderer.render(active,camera);
 }
@@ -398,13 +417,11 @@ function ignite(){
 function mapIntro(){
   mapGroup.scale.set(.001,.001,.001);
   gsap.to('#mapUI',{opacity:1,duration:.6});
-  const tl=gsap.timeline();
+  const frame=mapFramePosition(),tl=gsap.timeline();
   tl.to(mapGroup.scale,{x:1,y:1,z:1,duration:1.2,ease:'power3.out'})
-    .to(camera.position,{x:0,y:7.5,z:7,duration:1.6,ease:'power2.inOut'},0)
+    .to(camera.position,{x:frame.x,y:frame.y,z:frame.z,duration:1.6,ease:'power2.inOut'},0)
+    .to(look,{x:0,y:0,z:0,duration:1.6,ease:'power2.inOut'},0)
     .to(pin.position,{y:fesWorld.y,duration:.9,ease:'bounce.out',onComplete:()=>{pin.userData.on=true;gsap.set('#fes',{opacity:1})}},1.1)
-    .to(look,{x:fesWorld.x*.6,z:fesWorld.z*.6,duration:1.6,ease:'power2.inOut'},.8)
-    .to(camera.position,{x:fesWorld.x+.2,y:3.4,z:fesWorld.z+3.6,duration:1.8,ease:'power2.inOut'},2.4)
-    .to(look,{x:fesWorld.x,y:.2,z:fesWorld.z,duration:1.8,ease:'power2.inOut'},2.4)
     .add(handDemo,'+=.3');
 }
 let opened=false;
